@@ -24,6 +24,9 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
       const response = await fetch(`https://raw.githubusercontent.com/${repository.full_name}/${repository.default_branch}/README.md`);
       if (response.status === 200) {
         const text = await response.text();
+        // let text = await import("./mdcontent")
+        // text = text.default
+
         setMDREADME(text);
         setHasREADME(true);
       }
@@ -37,7 +40,7 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
   // const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
   // const text = textDecoder.decode(bytes);
   const text = mdREADME
-  const preview = text.substring(0, 500);
+  const preview = text.substring(0, 300);
   let html = marked(preview) as string;
 
   const parser = new DOMParser();
@@ -71,7 +74,7 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
           <Group gap={5}>
             {colour && 
               <div style={{
-                backgroundColor: colour as string,
+                backgroundColor: colour,
                 borderRadius: '50%',
                 width: '20px',
                 height: '20px',
@@ -102,9 +105,21 @@ export default function RepositoryCard({ repository }: RepositoryCardProps) {
                   dangerouslySetInnerHTML={{ __html: html }} 
                 />
                 <style jsx>{`
+                  .markdown-content {
+                    position: relative;
+                  }
                   .markdown-content img {
                     max-width: 10%;
                     height: auto;
+                  }
+                  .markdown-content::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 300px; 
+                    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
                   }
                 `}
                 </style>

@@ -1,22 +1,15 @@
-import { Text, Title, Center, Code } from "@mantine/core";
+"use client"
+
+import { Text, Title, Center, Code, Button } from "@mantine/core";
 import { getServerAuthSession } from "~/server/auth";
+import { IconBrandGithub } from "@tabler/icons-react";
+import { signIn, useSession } from "next-auth/react";
 import { api } from "~/trpc/server";
 
-export default async function Home() {
-
+export default function Home() {
   return (
     <>
-      <Center>
-        <Title>Mantine, TRPC, Prisma, NextAuth + App Directory Template</Title>
-      </Center>
-
-      <Center>
-        <Text>🎈 Mantine + T3 Stack Starter Kit</Text>
-      </Center>
-
-      <Center>
-        <Text>Edit <Code>src/app/page.tsx</Code> to get started</Text>
-      </Center>
+      <Button onClick={() => signIn("github")} color="#24292F" leftSection={<IconBrandGithub />}>Sign in with Github</Button>
     </>
   );
 }

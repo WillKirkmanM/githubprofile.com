@@ -15,14 +15,28 @@ type Colours = Record<string, { color: string }>;
 
 export default function RepositoryCard({ repository }: RepositoryCardProps) {
   const [hasREADME, setHasREADME] = useState(false)
+  const [mdREADME, setMDREADME] = useState('')
 
   const colour: string = colours[repository.language].color
 
-  const base64 = ''; // Request it from the server (I wonder about Rate Limits, authenticated users can make 5000 requests per hour) 
+  useEffect(() => {
+      async function fetchData() {
+      const response = await fetch(`https://raw.githubusercontent.com/${repository.full_name}/${repository.default_branch}/README.md`);
+      if (response.status === 200) {
+        const text = await response.text();
+        setMDREADME(text);
+        setHasREADME(true);
+      }
+    }
+    void fetchData();
+  }, [repository]);
 
-  const textDecoder = new TextDecoder('utf-8');
-  const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-  const text = textDecoder.decode(bytes);
+  // const base64 = ''; // Request it from the server (I wonder about Rate Limits, authenticated users can make 5000 requests per hour)HomTE:
+
+  // const textDecoder = new TextDecoder('utf-8');
+  // const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  // const text = textDecoder.decode(bytes);
+  const text = mdREADME
   const preview = text.substring(0, 500);
   let html = marked(preview) as string;
 

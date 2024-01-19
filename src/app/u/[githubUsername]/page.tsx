@@ -1,72 +1,28 @@
-"use client"
+import type { Metadata } from 'next'
+import type { GithubUser } from '~/server/api/routers/user'
+import { api } from '~/trpc/server'
+import GithubUserPage from './GithubUserPage'
+ 
+type Props = {
+  params: { githubUsername: string }
+}
+ 
+export async function generateMetadata(
+  { params }: Props,
+): Promise<Metadata> {
 
-import { Title, Text, Avatar, Stack, Group, SimpleGrid, Button, Center } from "@mantine/core";
-import { api } from "~/trpc/react";
-// import user from "../../data/user.json"
-// import repositories from "../../data/repository.json"
-import RepositoryCard from "~/app/components/Repository/RepositoryCard";
-import type { Repository } from "~/server/api/routers/user";
+  const user: GithubUser = await api.user.queryGithubUser.query({ username: params.githubUsername })
 
-interface UserPageProps {
-  params: {
-    githubUsername: string;
+  return {
+    title: `${user.name} (@${user.login}) | Github Profile`,
+    description: `${user.bio}`,
+    icons: [{ rel: "icon", url: user.avatar_url }],
+    keywords: "github, profile, repositories, user, followers, following, bio, name, login, avatar, url, website, location, twitter, company, email, hireable, bio, public_repos, public_gists, followers, following, created_at, updated_at, type, blog, company, twitter_username, site_admin, starred_url, subscriptions_url, organizations_url, repos_url, events_url, received_events_url, html_url, gravatar_id, node_id, id, followers_url, following_url, gists_url, login, avatar_url, url, html_url, followers_url, following_url, gists_url, starred_url, subscriptions_url, organizations_url, repos_url, events_url, received_events_url, type, site_admin, name, company, blog, location, email, hireable, bio, twitter_username, public_repos, public_gists, followers, following, created_at, updated_at"
   }
 }
-
-
-export default function GithubUserPage({ params }: UserPageProps) {
-  const user = api.user.queryGithubUser.useQuery({ username: params.githubUsername }).data
-  const repositories = api.user.queryGithubUserRepositories.useQuery({ username: params.githubUsername }).data
-
+ 
+export default function Page({ params }: Props) {
   return (
-    <>
-      {user ? (
-        <>
-          <Center>
-            <Group>
-              <Avatar src={user.avatar_url} size={200} />
-
-                <Stack gap="xl" mx={200}>
-                  <Title>{user.login}</Title>
-                  <Text>{user.name}</Text>
-
-                  <Group>
-                    <Stack gap={0.5} align="center">
-                      <Text fw={700}>{user.public_repos}</Text>
-                      <Text>{user.public_repos > 1 ? "Repositories" : "Repository"}</Text>
-                    </Stack>
-
-                    <Stack gap={0.5} align="center">
-                      <Text fw={700}>{user.followers}</Text>
-                      <Text>Followers</Text>
-                    </Stack>
-
-                    <Stack gap={0.5} align="center">
-                      <Text fw={700}>{user.following}</Text>
-                      <Text>Following</Text>
-                    </Stack>
-                  </Group>
-
-                    <Text>{user.bio}</Text>
-                    <Text>@{user.login}</Text>
-                    <Button color="indigo" component="a" href={`https://github.com/${user.login}`}>Follow</Button>
-                </Stack>
-            </Group>
-          </Center>
-
-          <SimpleGrid cols={3} spacing="xl" verticalSpacing="xl">
-            {repositories?.map((repository: Repository) => {
-              if (!repository.fork) {
-                return (
-                  <RepositoryCard key={repository.id} repository={repository} />
-                )
-              }
-            })}
-          </SimpleGrid>
-        </>
-      ) : (
-        <Text>Not found</Text>
-      )}
-    </>
+    <GithubUserPage params={params} />
   )
 }

@@ -2,9 +2,10 @@
 
 import { Title, Text, Avatar, Stack, Group, SimpleGrid, Button, Center } from "@mantine/core";
 import { api } from "~/trpc/react";
-import user from "../../data/user.json"
-import repositories from "../../data/repository.json"
+// import user from "../../data/user.json"
+// import repositories from "../../data/repository.json"
 import RepositoryCard from "~/app/components/Repository/RepositoryCard";
+import type { Repository } from "~/server/api/routers/user";
 
 interface UserPageProps {
   params: {
@@ -14,8 +15,8 @@ interface UserPageProps {
 
 
 export default function GithubUserPage({ params }: UserPageProps) {
-  // const user = api.user.queryGithubUser.useQuery({ username: params.githubUsername }).data
-  // const repositories = api.user.queryGithubUserRepositories.useQuery({ username: params.githubUsername }).data
+  const user = api.user.queryGithubUser.useQuery({ username: params.githubUsername }).data
+  const repositories = api.user.queryGithubUserRepositories.useQuery({ username: params.githubUsername }).data
 
   return (
     <>
@@ -54,7 +55,7 @@ export default function GithubUserPage({ params }: UserPageProps) {
           </Center>
 
           <SimpleGrid cols={3} spacing="xl" verticalSpacing="xl">
-            {repositories?.map((repository) => {
+            {repositories?.map((repository: Repository) => {
               if (!repository.fork) {
                 return (
                   <RepositoryCard key={repository.id} repository={repository} />

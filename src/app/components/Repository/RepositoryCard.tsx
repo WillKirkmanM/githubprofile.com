@@ -11,19 +11,17 @@ interface RepositoryCardProps {
   repository: Repository
 }
 
-type Colours = Record<string, { color: string }>;
+// type Colours = Record<string, { color: string }>;
+type Colours = Record<string, { color: string | null }>;
 
 export default function RepositoryCard({ repository }: RepositoryCardProps) {
   const [hasREADME, setHasREADME] = useState(false)
   const [mdREADME, setMDREADME] = useState('')
 
-  const colours: Colours = {
-    "1C Enterprise": { color: "#123456" },
-    "2-Dimensional Array": { color: "#789012" },
-    // Add more language-color mappings here
-  };
 
-  const colour: string = colours[repository.language ?? "JavaScript"]?.color ?? "#000000";
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const colourlist: Colours = colours;
+  const colour: string = colourlist[repository.language ?? "JavaScript"]?.color ?? "#000000";
 
   useEffect(() => {
       async function fetchData() {

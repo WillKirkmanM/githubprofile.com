@@ -1,6 +1,6 @@
 "use client"
 
-import { Title, Text, Avatar, Stack, Group, SimpleGrid, Button, Center, Container, Loader } from "@mantine/core";
+import { Title, Text, Avatar, Stack, Group, SimpleGrid, Button, Center, Container, Loader, Space } from "@mantine/core";
 import { api } from "~/trpc/react";
 // import user from "../../data/user.json"
 // import repositories from "../../data/repository.json"
@@ -55,18 +55,19 @@ export default function GithubUserPage({ params }: UserPageProps) {
             </Group>
           </Center>
           <SimpleGrid cols={3} spacing="xl" verticalSpacing="xl">
-            {repositories?.map((repository: Repository) => {
+            {repositories?.sort((a, b) => b.stargazers_count - a.stargazers_count).map((repository: Repository) => {
               if (!repository.fork) {
                 return (
                   <RepositoryCard key={repository.id} repository={repository} />
                 )
               }
             })}
-          </SimpleGrid>
+            </SimpleGrid>
         </>
       ) : (
         <>
         <Center>
+          <Space maw={400} h={100} />
           <Loader />
         </Center>
         </>
